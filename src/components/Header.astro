@@ -166,25 +166,29 @@ const currentPath = Astro.url.pathname;
       const popupWidth = 560;
       const popupHeight = 315;
       
-      // Open popup at current mouse position
+      // Open popup at current mouse position (with muted autoplay to avoid browser blocking)
       rickRollPopup = window.open(
-        'https://www.youtube.com/embed/8Fey680pHCk?autoplay=1',
+        'https://www.youtube.com/embed/8Fey680pHCk?autoplay=1&mute=1',
         'rickroll',
         `width=${popupWidth},height=${popupHeight},left=${mouseX},top=${mouseY},toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no`
       );
 
-      // Update popup position to follow mouse
-      if (rickRollPopup) {
+      // Update popup position to follow mouse (only if popup wasn't blocked)
+      if (rickRollPopup && !rickRollPopup.closed) {
         popupUpdateInterval = window.setInterval(() => {
           if (rickRollPopup && !rickRollPopup.closed) {
-            rickRollPopup.moveTo(mouseX, mouseY);
+            try {
+              rickRollPopup.moveTo(mouseX, mouseY);
+            } catch (e) {
+              // Ignore errors from moving popup (can happen with cross-origin restrictions)
+            }
           } else {
             if (popupUpdateInterval) {
               clearInterval(popupUpdateInterval);
               popupUpdateInterval = null;
             }
           }
-        }, 50);
+        }, 100);
       }
     }, delay);
   }
