@@ -34,7 +34,5 @@
 
   "postCreateCommand": "npm install",
   
-  "postStartCommand": "npm run dev",
-
   "remoteUser": "node"
 }
