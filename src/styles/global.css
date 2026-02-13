@@ -144,6 +144,133 @@
   100% { transform: translateX(-100%); }
 }
 
+/* Rick Roll mode 🎵 */
+[data-theme="rickroll"] {
+  --color-bg: #1a1a2e;
+  --color-bg-card: #16213e;
+  --color-bg-hover: #0f3460;
+  --color-text: #e94560;
+  --color-text-muted: #f4a261;
+  --color-primary: #e94560;
+  --color-secondary: #f4a261;
+  --color-tertiary: #e76f51;
+  --color-accent: #e94560;
+  --color-green: #2a9d8f;
+  --color-tag-bg: rgba(233, 69, 96, 0.15);
+  --color-tag-text: #e94560;
+  --color-border: rgba(233, 69, 96, 0.2);
+  --color-header-bg: rgba(26, 26, 46, 0.9);
+}
+
+[data-theme="rickroll"] body {
+  animation: rick-pulse 2s ease-in-out infinite;
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 35px,
+      rgba(233, 69, 96, 0.05) 35px,
+      rgba(233, 69, 96, 0.05) 70px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 35px,
+      rgba(244, 162, 97, 0.05) 35px,
+      rgba(244, 162, 97, 0.05) 70px
+    ),
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(233, 69, 96, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 50%,
+      rgba(244, 162, 97, 0.1) 0%,
+      transparent 50%
+    );
+  background-size: 100% 100%, 100% 100%, 50% 50%, 50% 50%;
+  background-position: 0 0, 0 0, 0 0, 100% 0;
+  position: relative;
+}
+
+[data-theme="rickroll"] body::before {
+  content: '🎵';
+  position: fixed;
+  font-size: 80px;
+  opacity: 0.03;
+  top: 20%;
+  left: 10%;
+  animation: rick-float 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="rickroll"] body::after {
+  content: '🎤';
+  position: fixed;
+  font-size: 100px;
+  opacity: 0.03;
+  bottom: 20%;
+  right: 15%;
+  animation: rick-float-delayed 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="rickroll"] .site-header {
+  background: linear-gradient(90deg, #e94560, #f4a261, #e94560) !important;
+  background-size: 200% 100%;
+  animation: rick-header-slide 3s linear infinite;
+}
+
+[data-theme="rickroll"] .tool-card {
+  border: 2px solid #e94560 !important;
+  animation: rick-bounce 1s ease-in-out infinite;
+}
+
+[data-theme="rickroll"] .tool-card:hover {
+  transform: rotate(5deg) scale(1.05);
+  box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+}
+
+@keyframes rick-pulse {
+  0%, 100% { background-color: var(--color-bg); }
+  50% { background-color: #1f1f3a; }
+}
+
+@keyframes rick-header-slide {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes rick-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes rick-float {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.03;
+  }
+  50% { 
+    transform: translateY(-30px) rotate(15deg);
+    opacity: 0.05;
+  }
+}
+
+@keyframes rick-float-delayed {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.03;
+  }
+  50% { 
+    transform: translateY(30px) rotate(-15deg);
+    opacity: 0.05;
+  }
+}
+
 *, *::before, *::after {
   margin: 0;
   padding: 0;

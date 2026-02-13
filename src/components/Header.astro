@@ -99,27 +99,98 @@ const currentPath = Astro.url.pathname;
     cursor: pointer;
     transition: all 0.3s ease;
     padding: 0;
+    overflow: hidden;
   }
 
   .theme-toggle:hover {
     border-color: var(--color-primary);
-    transform: rotate(20deg);
+    transform: rotate(20deg) scale(1.1);
   }
 
   .theme-icon {
     font-size: 1.1rem;
     line-height: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, rgba(255, 137, 6, 0.1), transparent);
+  }
+  
+  .theme-icon::before {
+    content: '';
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    opacity: 0.15;
+    z-index: -1;
   }
 </style>
 
 <script>
-  const themes = ['dark', 'light', 'geocities'];
-  const icons: Record<string, string> = { dark: '🌙', light: '☀️', geocities: '🌈' };
+  const themes = ['dark', 'light', 'geocities', 'rickroll'];
+  const icons: Record<string, string> = { dark: '🌙', light: '☀️', geocities: '🌈', rickroll: '🎵' };
+
+  let rickRollPopup: Window | null = null;
+  let mouseX = 0;
+  let mouseY = 0;
+  let popupUpdateInterval: number | null = null;
 
   function getTheme(): string {
     const saved = localStorage.getItem('ttt-theme');
     if (saved) return saved;
     return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function cleanupRickRoll() {
+    if (rickRollPopup && !rickRollPopup.closed) {
+      rickRollPopup.close();
+    }
+    if (popupUpdateInterval) {
+      clearInterval(popupUpdateInterval);
+      popupUpdateInterval = null;
+    }
+    rickRollPopup = null;
+  }
+
+  function showRickRoll() {
+    // Random delay between 0.5 and 2 seconds
+    const delay = Math.random() * 1500 + 500;
+    
+    setTimeout(() => {
+      cleanupRickRoll();
+      
+      const popupWidth = 560;
+      const popupHeight = 315;
+      
+      // Open popup at current mouse position (with muted autoplay to avoid browser blocking)
+      rickRollPopup = window.open(
+        'https://www.youtube.com/embed/8Fey680pHCk?autoplay=1&mute=1',
+        'rickroll',
+        `width=${popupWidth},height=${popupHeight},left=${mouseX},top=${mouseY},toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no`
+      );
+
+      // Update popup position to follow mouse (only if popup wasn't blocked)
+      if (rickRollPopup && !rickRollPopup.closed) {
+        popupUpdateInterval = window.setInterval(() => {
+          if (rickRollPopup && !rickRollPopup.closed) {
+            try {
+              rickRollPopup.moveTo(mouseX, mouseY);
+            } catch (e) {
+              // Ignore errors from moving popup (can happen with cross-origin restrictions)
+            }
+          } else {
+            if (popupUpdateInterval) {
+              clearInterval(popupUpdateInterval);
+              popupUpdateInterval = null;
+            }
+          }
+        }, 100);
+      }
+    }, delay);
   }
 
   function setTheme(theme: string) {
@@ -131,7 +202,20 @@ const currentPath = Astro.url.pathname;
       const nextTheme = themes[(themes.indexOf(theme) + 1) % themes.length];
       icon.textContent = icons[nextTheme];
     }
+
+    // Trigger Rick Roll if theme is rickroll
+    if (theme === 'rickroll') {
+      showRickRoll();
+    } else {
+      cleanupRickRoll();
+    }
   }
+
+  // Track mouse position
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.screenX;
+    mouseY = e.screenY;
+  });
 
   // Init on load
   setTheme(getTheme());
